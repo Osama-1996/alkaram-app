@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useSpring, animated } from '@react-spring/web';
+import { useGesture } from 'react-use-gesture';
 import Service1 from "../../assets/images/ser1.jpeg";
 import Service2 from "../../assets/images/ser2.jpeg";
 import Service3 from "../../assets/images/ser3.jpeg";
@@ -35,16 +37,32 @@ const Services = () => {
             </div>
             <div className="flex flex-wrap">
                 {blindsData.map((blind) => (
-                    <div key={blind.id} className="w-full sm:w-1/2 md:w-1/3 px-4 mb-8" data-aos="fade-up" data-aos-delay={blind.id * 100}>
-                        <div className="bg-white shadow-md rounded-lg overflow-hidden shadow-md">
-                            <img src={blind.image} alt={blind.name} className="w-full h-64 object-cover" />
-                            <div className="p-4 text-center">
-                                <h2 className="text-xl font-semibold text-gray-800">{blind.name}</h2>
-                            </div>
-                        </div>
-                    </div>
+                    <ServiceCard key={blind.id} blind={blind} />
                 ))}
             </div>
+        </div>
+    );
+};
+
+const ServiceCard = ({ blind }) => {
+    const [props, api] = useSpring(() => ({ scale: 1 }));
+
+    const bind = useGesture({
+        onHover: ({ hovering }) => api({ scale: hovering ? 1.1 : 1 }),
+    });
+
+    return (
+        <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-8" data-aos="fade-up" data-aos-delay={blind.id * 100}>
+            <animated.div
+                {...bind()}
+                className="bg-white shadow-md rounded-lg overflow-hidden shadow-md"
+                style={{ transform: props.scale.to(s => `scale(${s})`) }}
+            >
+                <img src={blind.image} alt={blind.name} className="w-full h-64 object-cover" />
+                <div className="p-4 text-center">
+                    <h2 className="text-xl font-semibold text-gray-800">{blind.name}</h2>
+                </div>
+            </animated.div>
         </div>
     );
 };

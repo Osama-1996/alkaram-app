@@ -1,5 +1,7 @@
 import React from 'react';
 import Slider from "react-slick";
+import { useSpring, animated } from '@react-spring/web';
+import { useGesture } from 'react-use-gesture';
 import S1 from "../../assets/images/s1.png";
 import S2 from "../../assets/images/s2.png";
 import S3 from "../../assets/images/s3.png";
@@ -25,12 +27,22 @@ const products = [
   { id: 9, name: "Vertical Blinds 127mm ", price: "50 SR m²", image: S9 },
   { id: 10, name: "Aluminum Venetian Blinds 50mm  ", price: "65 SR m²", image: S10 },
   { id: 11, name: "Aluminum Venetian Blinds 25mm ", price: "50 SR m²", image: S11 },
-  { id: 12, name: "PVC accodrion doors Plain colour ", price: "110 SR m²", image: S12 },
+  { id: 12, name: "PVC accordion doors Plain colour ", price: "110 SR m²", image: S12 },
 ];
 
 const ProductCard = ({ product }) => {
+  const [props, api] = useSpring(() => ({ scale: 1 }));
+
+  const bind = useGesture({
+    onHover: ({ hovering }) => api({ scale: hovering ? 1.1 : 1 }),
+  });
+
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden m-2 h-[370px]">
+    <animated.div
+      {...bind()}
+      className="bg-white shadow-md rounded-lg overflow-hidden m-2 h-[370px]"
+      style={{ transform: props.scale.to(s => `scale(${s})`) }}
+    >
       <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-3" />
       <div className="py-4 px-1 text-center">
         <h2 className="text-lg font-semibold text-gray-800">{product.name}</h2>
@@ -39,7 +51,7 @@ const ProductCard = ({ product }) => {
           Send Enquiry
         </button>
       </div>
-    </div>
+    </animated.div>
   );
 };
 
@@ -85,9 +97,7 @@ const ProductCarousel = () => {
       <h1 className="text-center font-[800] text-[45px] pb-7">Shop Now</h1>
       <Slider {...settings}>
         {products.map((product) => (
-          <div key={product.id} className="flex justify-center">
-            <ProductCard product={product} />
-          </div>
+          <ProductCard key={product.id} product={product} />
         ))}
       </Slider>
     </div>
